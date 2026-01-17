@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Anime - AniLab</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/tailwind.output.css">
+    <link rel="stylesheet" href="/css/glass.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .player-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            background: #000;
+        }
+        
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .episode-selector {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .episode-item.active {
+            background: rgba(147, 51, 234, 0.2);
+            border-left: 3px solid #9333ea;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 3px solid #9333ea;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="navbar glass py-4 px-6">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="/" id="logo">
+                    <img src="/assets/logo.png" alt="AniLab" class="h-10 w-auto">
+                </a>
+                <div id="animeTitleNav" class="hidden md:block text-lg font-semibold">
+                    <!-- Dynamically loaded -->
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="/home" class="text-white hover:text-purple-300">
+                    <i class="fas fa-home text-xl"></i>
+                </a>
+                <button id="toggleFullscreen" class="button is-light is-small">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Watch Info -->
+        <div class="mb-6">
+            <h1 id="watchTitle" class="text-2xl font-bold mb-2"></h1>
+            <div id="watchInfo" class="text-gray-400 text-sm">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Player Column -->
+            <div class="lg:col-span-2">
+                <!-- Player Container -->
+                <div id="playerContainer" class="rounded-lg overflow-hidden shadow-2xl mb-6">
+                    <div class="player-container">
+                        <div id="playerLoading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="loading-spinner"></div>
+                            <p class="ml-4">Loading player...</p>
+                        </div>
+                        <!-- Megaplay iframe will be inserted here -->
+                    </div>
+                </div>
+                
+                <!-- Player Controls -->
+                <div class="glass p-4 rounded-lg mb-6">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex space-x-4 mb-4 md:mb-0">
+                            <button id="prevEpisode" class="button is-light">
+                                <i class="fas fa-backward mr-2"></i>
+                                Previous
+                            </button>
+                            <button id="nextEpisode" class="button is-primary">
+                                Next
+                                <i class="fas fa-forward ml-2"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <div class="buttons has-addons">
+                                <button id="toggleSub" class="button is-small is-active" data-lang="sub">
+                                    <i class="fas fa-closed-captioning"></i>
+                                    <span class="ml-2">SUB</span>
+                                </button>
+                                <button id="toggleDub" class="button is-small" data-lang="dub">
+                                    <i class="fas fa-microphone"></i>
+                                    <span class="ml-2">DUB</span>
+                                </button>
+                            </div>
+                            
+                            <div class="dropdown is-up">
+                                <div class="dropdown-trigger">
+                                    <button class="button is-light is-small" aria-haspopup="true" aria-controls="quality-menu">
+                                        <i class="fas fa-cog mr-2"></i>
+                                        Quality
+                                    </button>
+                                </div>
+                                <div class="dropdown-menu" id="quality-menu" role="menu">
+                                    <div class="dropdown-content">
+                                        <a href="#" class="dropdown-item is-active">Auto</a>
+                                        <a href="#" class="dropdown-item">1080p</a>
+                                        <a href="#" class="dropdown-item">720p</a>
+                                        <a href="#" class="dropdown-item">480p</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Episode Description -->
+                <div class="glass p-6 rounded-lg">
+                    <h3 class="text-lg font-bold mb-4">Episode Description</h3>
+                    <p id="episodeDescription" class="text-gray-300">
+                        Loading description...
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Episodes Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="glass p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold">Episodes</h3>
+                        <div class="text-sm text-gray-400">
+                            <span id="currentEpisode">#1</span> of <span id="totalEpisodes">?</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Episode Search/Filter -->
+                    <div class="mb-4">
+                        <div class="field">
+                            <div class="control has-icons-left">
+                                <input type="text" 
+                                       class="input glass-input is-small" 
+                                       placeholder="Search episodes..."
+                                       id="episodeSearch">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Episode List -->
+                    <div id="episodeList" class="episode-selector space-y-2">
+                        <!-- Episodes loaded dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Anime Info Sidebar -->
+                <div class="glass p-4 rounded-lg mt-6">
+                    <div class="flex items-center mb-4">
+                        <img id="animePoster" 
+                             src="/assets/placeholder.jpg" 
+                             alt="Anime Poster"
+                             class="w-16 h-20 object-cover rounded mr-4">
+                        <div>
+                            <h4 id="sidebarAnimeTitle" class="font-bold"></h4>
+                            <p id="sidebarAnimeType" class="text-sm text-gray-400"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Status:</span>
+                            <span id="sidebarAnimeStatus"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Aired:</span>
+                            <span id="sidebarAnimeAired"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Duration:</span>
+                            <span id="sidebarAnimeDuration"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Rating:</span>
+                            <span id="sidebarAnimeRating"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="#" id="viewDetailsBtn" class="button is-light is-fullwidth is-small">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            View Full Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass py-6 px-4 mt-8">
+        <div class="container mx-auto text-center text-gray-400 text-sm">
+            <p>© 2024 AniLab. Streaming provided by Megaplay. This site does not host any videos.</p>
+            <p class="mt-2">Having issues with the player? <a href="#" class="text-purple-400 hover:text-purple-300">Report a problem</a></p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="/js/megaplayer.js"></script>
+    
+    <script>
+        // Get parameters from URL
+        function getUrlParams() {
+            const params = {};
+            const pathMatch = window.location.pathname.match(/\/watch\/([^\/]+)/);
+            if (pathMatch) {
+                params.animeId = pathMatch[1];
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            params.episode = parseInt(urlParams.get('ep')) || 1;
+            params.lang = urlParams.get('lang') || 'sub';
+            
+            return params;
+        }
+        
+        // Initialize MegaPlayer
+        let player;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = getUrlParams();
+            
+            if (!params.animeId) {
+                window.location.href = '/404.html';
+                return;
+            }
+            
+            // Store anime ID for continue watching
+            const animeIdInput = document.createElement('input');
+            animeIdInput.type = 'hidden';
+            animeIdInput.id = 'animeId';
+            animeIdInput.value = params.animeId;
+            document.body.appendChild(animeIdInput);
+            
+            // Initialize player
+            player = new MegaPlayer('playerContainer');
+            
+            // Load watch data
+            await loadWatchData(params.animeId, params.episode, params.lang);
+            
+            // Initialize event listeners
+            initEventListeners();
+            
+            // Update continue watching
+            updateContinueWatching(params.animeId, params.episode);
+        });
+        
+        async function loadWatchData(animeId, episode, language) {
+            try {
+                // Show loading
+                document.getElementById('playerLoading').style.display = 'flex';
+                
+                const response = await fetch(`/watch/${animeId}/data?ep=${episode}&lang=${language}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderWatchData(data.data);
+                    
+                    // Load episode in player
+                    const episodeId = data.data.episode.id || `${animeId}-${episode}`;
+                    player.loadEpisode(episodeId, language);
+                } else {
+                    showError('Failed to load episode');
+                }
+                
+            } catch (error) {
+                console.error('Error loading watch data:', error);
+                showError('Connection error. Please try again.');
+            } finally {
+                // Hide loading
+                document.getElementById('playerLoading').style.display = 'none';
+            }
+        }
+        
+        function renderWatchData(data) {
+            const { anime, episode, navigation, episodes } = data;
+            
+            // Update page title
+            document.title = `${anime.title} - Episode ${navigation.current} - AniLab`;
+            
+            // Update anime info
+            document.getElementById('animeTitleNav').textContent = anime.title;
+            document.getElementById('watchTitle').textContent = 
+                `${anime.title} - Episode ${navigation.current}`;
+            
+            document.getElementById('watchInfo').innerHTML = `
+                <span class="mr-4">
+                    <i class="fas fa-play-circle"></i> Episode ${navigation.current}
+                </span>
+                <span class="mr-4">
+                    <i class="fas fa-clock"></i> ${episode.duration || '24m'}
+                </span>
+                <span>
+                    <i class="fas fa-${episode.language === 'dub' ? 'microphone' : 'closed-captioning'}"></i>
+                    ${episode.language === 'dub' ? 'English Dub' : 'Japanese Sub'}
+                </span>
+            `;
+            
+            // Update episode description
+            document.getElementById('episodeDescription').textContent = 
+                episode.description || 'No description available for this episode.';
+            
+            // Update sidebar anime info
+            document.getElementById('animePoster').src = anime.poster || '/assets/placeholder.jpg';
+            document.getElementById('sidebarAnimeTitle').textContent = anime.title;
+            document.getElementById('sidebarAnimeType').textContent = anime.type || 'TV';
+            document.getElementById('sidebarAnimeStatus').textContent = anime.status || 'Unknown';
+            // Additional info would come from anime details API
+            
+            // Update view details button
+            document.getElementById('viewDetailsBtn').href = `/anime/${anime.id}`;
+            
+            // Update episode list
+            renderEpisodeList(episodes, navigation.current);
+            
+            // Update navigation buttons
+            updateNavigationButtons(navigation);
+            
+            // Update current/total episodes
+            document.getElementById('currentEpisode').textContent = `#${navigation.current}`;
+            document.getElementById('totalEpisodes').textContent = episodes.length;
+            
+            // Update language toggle
+            updateLanguageToggle(episode.language);
+        }
+        
+        function renderEpisodeList(episodes, currentEpisode) {
+            const container = document.getElementById('episodeList');
+            if (!container) return;
+            
+            container.innerHTML = episodes.map(ep => `
+                <div class="episode-item p-3 rounded cursor-pointer hover:bg-gray-800 transition ${ep.number === currentEpisode ? 'active' : ''}" 
+                     data-episode="${ep.number}" 
+                     data-lang="${ep.language || 'sub'}">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-medium">Episode ${ep.number}</div>
+                            <div class="text-sm text-gray-400 truncate">${ep.title || `Episode ${ep.number}`}</div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="tag is-small ${ep.language === 'dub' ? 'is-info' : 'is-success'}">
+                                ${ep.language === 'dub' ? 'DUB' : 'SUB'}
+                            </span>
+                            <span class="text-xs text-gray-500">${ep.duration || '24m'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add click event to episodes
+            container.querySelectorAll('.episode-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const episode = item.getAttribute('data-episode');
+                    const lang = item.getAttribute('data-lang');
+                    loadEpisode(episode, lang);
+                });
+            });
+        }
+        
+        function updateNavigationButtons(navigation) {
+            const prevBtn = document.getElementById('prevEpisode');
+            const nextBtn = document.getElementById('nextEpisode');
+            
+            // Previous episode
+            if (navigation.previous) {
+                prevBtn.disabled = false;
+                prevBtn.classList.remove('is-light');
+                prevBtn.classList.add('is-primary');
+                prevBtn.onclick = () => loadEpisode(navigation.previous.number);
+            } else {
+                prevBtn.disabled = true;
+                prevBtn.classList.remove('is-primary');
+                prevBtn.classList.add('is-light');
+                prevBtn.onclick = null;
+            }
+            
+            // Next episode
+            if (navigation.next) {
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('is-light');
+                nextBtn.classList.add('is-primary');
+                nextBtn.onclick = () => loadEpisode(navigation.next.number);
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.classList.remove('is-primary');
+                nextBtn.classList.add('is-light');
+                nextBtn.onclick = null;
+            }
+        }
+        
+        function updateLanguageToggle(currentLang) {
+            const subBtn = document.getElementById('toggleSub');
+            const dubBtn = document.getElementById('toggleDub');
+            
+            if (currentLang === 'dub') {
+                subBtn.classList.remove('is-active');
+                dubBtn.classList.add('is-active');
+            } else {
+                subBtn.classList.add('is-active');
+                dubBtn.classList.remove('is-active');
+            }
+        }
+        
+        function loadEpisode(episodeNumber, language = null) {
+            const params = getUrlParams();
+            const newLang = language || params.lang;
+            
+            // Update URL without page reload
+            const newUrl = `/watch/${params.animeId}?ep=${episodeNumber}&lang=${newLang}`;
+            window.history.pushState({}, '', newUrl);
+            
+            // Reload data
+            loadWatchData(params.animeId, episodeNumber, newLang);
+        }
+        
+        function initEventListeners() {
+            // Language toggle
+            document.getElementById('toggleSub').addEventListener('click', () => {
+                const params = getUrlParams();
+                loadEpisode(params.episode, 'sub');
+            });
+            
+            document.getElementById('toggleDub').addEventListener('click', () => {
+                const params = getUrlParams();
+                loadEpisode(params.episode, 'dub');
+            });
+            
+            // Fullscreen toggle
+            document.getElementById('toggleFullscreen').addEventListener('click', () => {
+                const playerContainer = document.getElementById('playerContainer');
+                if (!document.fullscreenElement) {
+                    playerContainer.requestFullscreen().catch(err => {
+                        console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+            
+            // Episode search
+            document.getElementById('episodeSearch').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const episodes = document.querySelectorAll('.episode-item');
+                
+                episodes.forEach(ep => {
+                    const text = ep.textContent.toLowerCase();
+                    ep.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                });
+            });
+            
+            // Handle browser back/forward
+            window.addEventListener('popstate', () => {
+                const params = getUrlParams();
+                loadWatchData(params.animeId, params.episode, params.lang);
+            });
+        }
+        
+        function updateContinueWatching(animeId, episode) {
+            // Get anime title from page
+            const animeTitle = document.getElementById('sidebarAnimeTitle').textContent;
+            const poster = document.getElementById('animePoster').src;
+            
+            // Save to localStorage
+            if (window.continueWatching) {
+                window.continueWatching.saveProgress({
+                    animeId,
+                    title: animeTitle,
+                    poster,
+                    episode,
+                    timestamp: Date.now(),
+                    time: 0 // Would track actual watch time
+                });
+            }
+        }
+    </script>
+</body>
+</html>
