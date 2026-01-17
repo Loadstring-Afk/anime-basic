@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - AniLab</title>
+    
+    <link rel="stylesheet" href="/css/tailwind.output.css">
+    <link rel="stylesheet" href="/css/glass.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .error-container {
+            min-height: 80vh;
+        }
+        
+        .error-illustration {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-purple-900">
+    <!-- Navigation -->
+    <nav class="navbar glass py-4 px-6">
+        <div class="container mx-auto">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/logo.png" alt="AniLab" class="h-10">
+                <span class="text-xl font-bold text-white">AniLab</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 404 Content -->
+    <main class="error-container flex items-center justify-center px-4">
+        <div class="text-center max-w-2xl">
+            <!-- Error Illustration -->
+            <div class="error-illustration mb-8">
+                <img src="/assets/404.png" alt="404 Error" class="w-64 mx-auto">
+            </div>
+            
+            <!-- Error Message -->
+            <h1 class="text-6xl font-bold text-white mb-4">404</h1>
+            <h2 class="text-2xl font-semibold text-gray-300 mb-6">Page Not Found</h2>
+            <p class="text-gray-400 mb-8 text-lg">
+                The anime or page you're looking for doesn't exist or has been moved.
+                Maybe it's off on its own adventure?
+            </p>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/" class="btn-primary py-3 px-8 rounded-lg">
+                    <i class="fas fa-home mr-2"></i>
+                    Go Home
+                </a>
+                <a href="/home" class="btn-secondary py-3 px-8 rounded-lg">
+                    <i class="fas fa-film mr-2"></i>
+                    Browse Anime
+                </a>
+                <button onclick="history.back()" class="btn-secondary py-3 px-8 rounded-lg">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Go Back
+                </button>
+            </div>
+            
+            <!-- Search -->
+            <div class="mt-12">
+                <p class="text-gray-400 mb-4">Or search for anime:</p>
+                <div class="max-w-md mx-auto">
+                    <div class="relative">
+                        <input type="text" 
+                               placeholder="Search anime titles..." 
+                               class="glass-input w-full py-3 pl-12 pr-4">
+                        <div class="absolute left-4 top-3.5">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Popular Links -->
+            <div class="mt-12">
+                <p class="text-gray-400 mb-4">Popular pages:</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="/top-airing" class="px-4 py-2 bg-gray-800/50 rounded-lg hover:bg-gray-700 transition">
+                        Top Airing
+                    </a>
+                    <a href="/recently-added" class="px-4 py-2 bg-gray-800/50 rounded-lg hover:bg-gray-700 transition">
+                        Recently Added
+                    </a>
+                    <a href="/movie" class="px-4 py-2 bg-gray-800/50 rounded-lg hover:bg-gray-700 transition">
+                        Movies
+                    </a>
+                    <a href="/most-popular" class="px-4 py-2 bg-gray-800/50 rounded-lg hover:bg-gray-700 transition">
+                        Most Popular
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass py-8 px-6 mt-12">
+        <div class="container mx-auto text-center text-gray-400">
+            <p>© 2024 AniLab. This site does not host any videos.</p>
+            <p class="mt-2 text-sm">If you believe this is an error, please <a href="#" class="text-purple-400 hover:text-purple-300">contact support</a>.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add search functionality
+            const searchInput = document.querySelector('input[type="text"]');
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && searchInput.value.trim()) {
+                    window.location.href = `/filter?q=${encodeURIComponent(searchInput.value)}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
