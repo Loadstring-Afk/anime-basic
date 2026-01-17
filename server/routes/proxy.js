@@ -6,8 +6,7 @@ const router = express.Router();
 // LRU Cache with 10 min TTL
 const cache = new NodeCache({ 
   stdTTL: 600,
-  maxKeys: 1000,
-  useClones: false 
+  maxKeys: 1000
 });
 
 const HI_ANIME_API = 'https://nicolas-maduro.nescoroco.lat/api/v1';
@@ -31,67 +30,47 @@ const cacheMiddleware = (req, res, next) => {
   next();
 };
 
-// Proxy all API requests
+// PROXY ALL API REQUESTS EXACTLY AS SPECIFIED
 router.get('/*', cacheMiddleware, async (req, res) => {
   try {
-    const apiUrl = `${HI_ANIME_API}${req.params[0]}${req._parsedUrl.search || ''}`;
+    // Build the exact API URL
+    const apiPath = req.params[0];
+    const queryString = req._parsedUrl.search || '';
+    const apiUrl = `${HI_ANIME_API}${apiPath}${queryString}`;
     
-    console.log(`Fetching: ${apiUrl}`);
+    console.log(`📡 Proxying to: ${apiUrl}`);
     
+    // Make request to HiAnime API
     const response = await axios.get(apiUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 AniLab/1.0',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Referer': 'https://hianime.to/'
       },
-      timeout: 10000
+      timeout: 15000
     });
     
     // Set cache headers
     res.set('Cache-Control', 'public, max-age=300');
     res.set('ETag', `"${Date.now()}"`);
     
+    // Return the exact API response
     res.json(response.data);
     
   } catch (error) {
-    console.error('API Error:', error.message);
+    console.error('❌ API Proxy Error:', {
+      url: req.originalUrl,
+      error: error.message,
+      status: error.response?.status
+    });
     
-    // Return fallback data if API fails
-    if (req.path.includes('/home')) {
-      res.json({
-        success: true,
-        data: {
-          spotlight: getFallbackSpotlight(),
-          trending: getFallbackTrending(),
-          recent: getFallbackRecent()
-        }
-      });
-    } else {
-      res.status(502).json({
-        success: false,
-        message: 'API temporarily unavailable',
-        data: {}
-      });
-    }
+    // Return error response matching API format
+    res.status(error.response?.status || 500).json({
+      success: false,
+      message: 'API request failed',
+      error: error.message
+    });
   }
 });
-
-// Fallback data functions
-function getFallbackSpotlight() {
-  return [{
-    title: "One Piece",
-    alternativeTitle: "ワンピース",
-    id: "one-piece",
-    poster: "/assets/placeholder.jpg",
-    rank: 1,
-    type: "TV",
-    quality: "HD",
-    duration: "24m",
-    aired: "1999-10-20",
-    synopsis: "The legendary pirate adventure continues...",
-    episodes: { sub: 1090, dub: 1080, eps: 1090 }
-  }];
-}
-
-// ... more fallback functions
 
 module.exports = router;
