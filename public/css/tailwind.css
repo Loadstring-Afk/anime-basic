@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Base Styles */
+@layer base {
+    body {
+        @apply antialiased;
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        @apply w-2;
+    }
+    
+    ::-webkit-scrollbar-track {
+        @apply bg-gray-900;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        @apply bg-purple-700 rounded-full;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-purple-600;
+    }
+}
+
+/* Custom Components */
+@layer components {
+    .btn-primary {
+        @apply bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-6 rounded-lg 
+               transition duration-200 transform hover:scale-105 active:scale-95;
+    }
+    
+    .btn-secondary {
+        @apply bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-lg 
+               transition duration-200 border border-gray-700;
+    }
+    
+    .card-hover {
+        @apply transition duration-300 hover:scale-105 hover:shadow-2xl;
+    }
+    
+    .glass-input {
+        @apply bg-white/5 border border-white/10 text-white placeholder-gray-400 
+               rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+    }
+    
+    .anime-card {
+        @apply relative overflow-hidden rounded-xl bg-gray-800/50 backdrop-blur-sm 
+               border border-gray-700/50 transition-all duration-300;
+    }
+    
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+    
+    .badge-primary {
+        @apply bg-purple-100 text-purple-800;
+    }
+    
+    .badge-secondary {
+        @apply bg-gray-100 text-gray-800;
+    }
+    
+    .line-clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+    
+    .line-clamp-3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+    
+    .line-clamp-4 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+    }
+}
+
+/* Custom Utilities */
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+    
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .animation-delay-200 {
+        animation-delay: 200ms;
+    }
+    
+    .animation-delay-400 {
+        animation-delay: 400ms;
+    }
+}
