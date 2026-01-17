@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Airing Anime - AniLab</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/tailwind.output.css">
+    <link rel="stylesheet" href="/css/glass.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .ranking-badge {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32, #8B4513); color: #000; }
+        .rank-4-10 { background: rgba(147, 51, 234, 0.2); color: white; }
+        
+        .airing-status {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="navbar glass py-4 px-6 fixed w-full z-50">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="/" id="logo">
+                    <img src="/assets/logo.png" alt="AniLab" class="h-10 w-auto">
+                </a>
+                <div class="hidden md:flex space-x-6">
+                    <a href="/home" class="text-gray-300 hover:text-white">Home</a>
+                    <a href="/top-airing" class="text-white font-medium">Top Airing</a>
+                    <a href="/most-popular" class="text-gray-300 hover:text-white">Popular</a>
+                    <a href="/top-rated" class="text-gray-300 hover:text-white">Top Rated</a>
+                </div>
+            </div>
+            
+            <div class="flex-1 max-w-xl mx-8">
+                <div class="field">
+                    <div class="control has-icons-left">
+                        <input class="input glass-input pl-5 pr-10" type="text" placeholder="Search anime...">
+                        <span class="icon is-left">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="/continue-watching" class="text-white hover:text-purple-300">
+                    <i class="fas fa-history text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="pt-24 pb-8 px-6">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">Top Airing Anime</h1>
+                    <p class="text-gray-400">Currently airing anime ranked by popularity and ratings</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button class="button is-light">
+                        <i class="fas fa-filter mr-2"></i>
+                        Filter
+                    </button>
+                    <button class="button is-light">
+                        <i class="fas fa-sort mr-2"></i>
+                        Sort
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div class="glass p-4 rounded-lg mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <div class="text-sm text-gray-400">Total Airing</div>
+                        <div class="text-2xl font-bold" id="totalAiring">Loading...</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-400">Weekly Updates</div>
+                        <div class="text-2xl font-bold" id="weeklyUpdates">...</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-400">Avg. Rating</div>
+                        <div class="text-2xl font-bold" id="avgRating">...</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-400">Most Popular Genre</div>
+                        <div class="text-2xl font-bold" id="topGenre">...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-6 pb-16">
+        <div class="container mx-auto">
+            <!-- Ranking Table -->
+            <div class="glass rounded-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-800/50">
+                            <tr>
+                                <th class="py-4 px-6 text-left">Rank</th>
+                                <th class="py-4 px-6 text-left">Anime</th>
+                                <th class="py-4 px-6 text-left">Score</th>
+                                <th class="py-4 px-6 text-left">Status</th>
+                                <th class="py-4 px-6 text-left">Next Episode</th>
+                                <th class="py-4 px-6 text-left">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingTable">
+                            <!-- Dynamic content -->
+                            <tr>
+                                <td colspan="6" class="py-12 text-center">
+                                    <div class="loading-spinner w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p>Loading top airing anime...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Grid View (Alternative) -->
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold mb-6">All Airing Anime</h2>
+                <div id="gridView" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- Dynamic content -->
+                </div>
+                <div class="text-center mt-8">
+                    <button id="loadMore" class="button is-primary is-large" disabled>
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Loading...
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass py-8 px-6">
+        <div class="container mx-auto text-center text-gray-400">
+            <p>© 2024 AniLab. Updated daily with current season rankings.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="/js/animations.js"></script>
+    
+    <script>
+        let currentPage = 1;
+        const itemsPerPage = 24;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load top airing data
+            await loadTopAiringData();
+            
+            // Initialize animations
+            initRankingAnimations();
+            
+            // Load more button
+            document.getElementById('loadMore').addEventListener('click', loadMoreAnime);
+        });
+        
+        async function loadTopAiringData() {
+            try {
+                const response = await fetch('/api/top-airing');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderRankingTable(data.data);
+                    renderGridView(data.data);
+                    updateStats(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading top airing:', error);
+                renderFallbackData();
+            }
+        }
+        
+        function renderRankingTable(animeList) {
+            const table = document.getElementById('rankingTable');
+            if (!table) return;
+            
+            if (!animeList || animeList.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-12 text-center">
+                            <i class="fas fa-tv text-4xl text-gray-600 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-400 mb-2">No Airing Anime Found</h3>
+                            <p class="text-gray-500">Check back later for current season updates.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            table.innerHTML = animeList.slice(0, 10).map((anime, index) => `
+                <tr class="border-b border-gray-800 hover:bg-gray-800/30 transition">
+                    <td class="py-4 px-6">
+                        <div class="ranking-badge ${getRankClass(index + 1)}">
+                            ${index + 1}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center">
+                            <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                                 alt="${anime.title}"
+                                 class="w-16 h-20 object-cover rounded mr-4"
+                                 onerror="this.src='/assets/placeholder.jpg'">
+                            <div>
+                                <a href="/anime/${anime.id}" class="font-bold hover:text-purple-300">${anime.title}</a>
+                                <div class="text-sm text-gray-400">${anime.type || 'TV'} • ${anime.episodes?.current || '?'}/${anime.episodes?.total || '?'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-2"></i>
+                            <span class="font-bold">${anime.rating || 'N/A'}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="airing-status px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">
+                            <i class="fas fa-broadcast-tower mr-1"></i>
+                            Airing
+                        </span>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="text-sm">
+                            <div class="font-medium">Ep ${(anime.episodes?.current || 0) + 1}</div>
+                            <div class="text-gray-400">${anime.nextAiring || 'Unknown'}</div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <a href="/watch/${anime.id}?ep=${anime.episodes?.current || 1}" 
+                           class="button is-small is-purple">
+                            <i class="fas fa-play mr-2"></i>
+                            Watch
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderGridView(animeList) {
+            const grid = document.getElementById('gridView');
+            if (!grid) return;
+            
+            grid.innerHTML = animeList.map(anime => `
+                <div class="anime-card group">
+                    <div class="relative overflow-hidden rounded-lg mb-3">
+                        <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                             alt="${anime.title}"
+                             loading="lazy"
+                             class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                             onerror="this.src='/assets/placeholder.jpg'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute bottom-3 left-3 right-3">
+                                <a href="/watch/${anime.id}?ep=${anime.episodes?.current || 1}" 
+                                   class="button is-small is-purple w-full">
+                                    <i class="fas fa-play mr-2"></i>
+                                    Continue Watching
+                                </a>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 left-2">
+                            <span class="px-2 py-1 bg-black/70 text-white text-xs font-bold rounded">
+                                Ep ${anime.episodes?.current || '?'}
+                            </span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold truncate hover:text-purple-300">
+                        <a href="/anime/${anime.id}">${anime.title}</a>
+                    </h3>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <span class="mr-3">
+                            <i class="fas fa-star text-yellow-400"></i> ${anime.rating || 'N/A'}
+                        </span>
+                        <span>${anime.type || 'TV'}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Enable load more button
+            const loadMoreBtn = document.getElementById('loadMore');
+            loadMoreBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Load More';
+            loadMoreBtn.disabled = false;
+        }
+        
+        function getRankClass(rank) {
+            if (rank === 1) return 'rank-1';
+            if (rank === 2) return 'rank-2';
+            if (rank === 3) return 'rank-3';
+            return 'rank-4-10';
+        }
+        
+        async function loadMoreAnime() {
+            const btn = document.getElementById('loadMore');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+            btn.disabled = true;
+            
+            // Simulate loading more data
+            setTimeout(() => {
+                // In real implementation, fetch next page from API
+                btn.innerHTML = '<i class="fas fa-plus mr-2"></i>Load More';
+                btn.disabled = false;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
