@@ -1,0 +1,349 @@
+/* Custom Bulma CSS Overrides for AniLab */
+
+/* Import Bulma first */
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css";
+
+/* Custom Variables */
+:root {
+  --bulma-primary: #9333ea;
+  --bulma-primary-light: #a855f7;
+  --bulma-primary-dark: #7c3aed;
+  --bulma-dark: #0f0f14;
+  --bulma-light: #1a1a24;
+}
+
+/* Button Overrides */
+.button.is-primary {
+  background: linear-gradient(135deg, var(--bulma-primary), var(--bulma-primary-dark));
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.button.is-primary:hover {
+  background: linear-gradient(135deg, var(--bulma-primary-light), var(--bulma-primary));
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(147, 51, 234, 0.3);
+}
+
+.button.is-primary:active {
+  transform: translateY(0);
+}
+
+.button.is-purple {
+  background-color: var(--bulma-primary);
+  border-color: transparent;
+  color: white;
+}
+
+.button.is-purple:hover {
+  background-color: var(--bulma-primary-dark);
+  border-color: transparent;
+  color: white;
+}
+
+.button.is-light {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.button.is-light:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Navbar Overrides */
+.navbar {
+  background: transparent;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.navbar-item {
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.navbar-item:hover {
+  background-color: transparent;
+  color: var(--bulma-primary-light);
+}
+
+.navbar-burger {
+  color: white;
+}
+
+/* Card Overrides */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+/* Tag Overrides */
+.tag {
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.tag.is-primary {
+  background: linear-gradient(135deg, var(--bulma-primary), var(--bulma-primary-dark));
+  color: white;
+  border: none;
+}
+
+.tag.is-dark {
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+/* Input Overrides */
+.input, .textarea, .select select {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 12px;
+}
+
+.input:focus, .textarea:focus, .select select:focus {
+  border-color: var(--bulma-primary);
+  box-shadow: 0 0 0 0.125em rgba(147, 51, 234, 0.25);
+}
+
+.input::placeholder, .textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Modal Overrides */
+.modal-card {
+  background: #1a1a24;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-card-head, .modal-card-foot {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-card-title {
+  color: white;
+}
+
+/* Table Overrides */
+.table {
+  background: transparent;
+  color: white;
+}
+
+.table thead th {
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.table tbody tr {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Progress Bar Overrides */
+.progress {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.progress::-webkit-progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--bulma-primary), var(--bulma-primary-light));
+  border-radius: 10px;
+}
+
+.progress::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--bulma-primary), var(--bulma-primary-light));
+  border-radius: 10px;
+}
+
+/* Dropdown Overrides */
+.dropdown-content {
+  background: #1a1a24;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-item {
+  color: white;
+}
+
+.dropdown-item:hover {
+  background: rgba(147, 51, 234, 0.2);
+  color: white;
+}
+
+/* Tabs Overrides */
+.tabs ul {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.tabs a {
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.tabs a:hover {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.tabs li.is-active a {
+  color: var(--bulma-primary-light);
+  border-bottom-color: var(--bulma-primary-light);
+}
+
+/* Pagination Overrides */
+.pagination-link, .pagination-previous, .pagination-next {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.pagination-link:hover, .pagination-previous:hover, .pagination-next:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.pagination-link.is-current {
+  background: linear-gradient(135deg, var(--bulma-primary), var(--bulma-primary-dark));
+  border-color: transparent;
+  color: white;
+}
+
+/* Notification Overrides */
+.notification {
+  background: #1a1a24;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.notification.is-primary {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(147, 51, 234, 0.1));
+  border-color: rgba(147, 51, 234, 0.3);
+}
+
+/* Message Overrides */
+.message {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.message-header {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.message-body {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Custom Bulma Extensions */
+.is-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.is-rounded-xl {
+  border-radius: 16px;
+}
+
+.is-rounded-2xl {
+  border-radius: 24px;
+}
+
+.has-text-gradient {
+  background: linear-gradient(135deg, var(--bulma-primary), var(--bulma-primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+  .navbar-menu {
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 0 0 16px 16px;
+    padding: 1rem;
+  }
+  
+  .modal-card {
+    margin: 0 1rem;
+    width: auto;
+  }
+}
+
+/* Animation Classes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom Scrollbar for Bulma Components */
+.bulma-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(147, 51, 234, 0.5) rgba(0, 0, 0, 0.1);
+}
+
+.bulma-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.bulma-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.bulma-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(147, 51, 234, 0.5);
+  border-radius: 4px;
+}
+
+.bulma-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(147, 51, 234, 0.7);
+}
