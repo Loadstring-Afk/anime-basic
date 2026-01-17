@@ -10,6 +10,9 @@ const pageRoutes = require('./routes/pages');
 const animeRoutes = require('./routes/anime');
 const watchRoutes = require('./routes/watch');
 const proxyRoutes = require('./routes/proxy');
+const genreRoutes = require('./routes/genre');
+const peopleRoutes = require('./routes/people');
+const filterRoutes = require('./routes/filter');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,11 +41,16 @@ app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
 app.use('/css', express.static(path.join(__dirname, '../public/css')));
 app.use('/js', express.static(path.join(__dirname, '../public/js')));
 
-// Routes
-app.use('/', pageRoutes);
+// API Routes (PROXY TO HI-ANIME API)
 app.use('/api', proxyRoutes);
+
+// Application Routes
+app.use('/', pageRoutes);
 app.use('/anime', animeRoutes);
 app.use('/watch', watchRoutes);
+app.use('/genre', genreRoutes);
+app.use('/people', peopleRoutes);
+app.use('/filter', filterRoutes);
 
 // Error handling
 app.use((req, res) => {
@@ -53,10 +61,11 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
     success: false, 
-    message: 'Something went wrong!' 
+    message: 'Internal server error' 
   });
 });
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📁 Using HiAnime API: https://nicolas-maduro.nescoroco.lat/api/v1`);
 });
