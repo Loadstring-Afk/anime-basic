@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search & Filter Anime - AniLab</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/tailwind.output.css">
+    <link rel="stylesheet" href="/css/glass.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .filter-section {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-section.collapsed {
+            max-height: 60px;
+            overflow: hidden;
+        }
+        
+        .filter-tag {
+            transition: all 0.2s ease;
+        }
+        
+        .filter-tag:hover {
+            transform: scale(1.05);
+        }
+        
+        .filter-tag.active {
+            background: linear-gradient(135deg, #9333ea, #3b82f6);
+            color: white;
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="navbar glass py-4 px-6">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="/" id="logo">
+                    <img src="/assets/logo.png" alt="AniLab" class="h-10 w-auto">
+                </a>
+            </div>
+            
+            <div class="flex-1 max-w-2xl mx-8">
+                <div class="field">
+                    <div class="control has-icons-left has-icons-right">
+                        <input class="input glass-input pl-5 pr-12" 
+                               type="text" 
+                               placeholder="Search anime by title, character, studio..."
+                               id="searchInput"
+                               value="${new URLSearchParams(window.location.search).get('q') || ''}">
+                        <span class="icon is-left">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </span>
+                        <span class="icon is-right">
+                            <i class="fas fa-times text-gray-400 cursor-pointer" id="clearSearch"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="button is-light" id="toggleFilters">
+                    <i class="fas fa-filter mr-2"></i>
+                    Filters
+                </button>
+                <a href="/home" class="text-white hover:text-purple-300">
+                    <i class="fas fa-home text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Filters Sidebar -->
+            <div class="lg:col-span-1" id="filtersSidebar">
+                <div class="glass p-6 rounded-xl sticky top-24">
+                    <!-- Search Summary -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold mb-2">Filters</h2>
+                        <div id="activeFilters" class="flex flex-wrap gap-2 mb-4">
+                            <!-- Active filters appear here -->
+                        </div>
+                        <button id="clearAllFilters" class="button is-small is-light w-full">
+                            Clear All Filters
+                        </button>
+                    </div>
+                    
+                    <!-- Genre Filter -->
+                    <div class="filter-section mb-6">
+                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
+                            <h3 class="font-bold">Genres</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="filter-tag tag" data-filter="genre" data-value="action">Action</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="adventure">Adventure</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="comedy">Comedy</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="drama">Drama</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="fantasy">Fantasy</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="romance">Romance</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="sci-fi">Sci-Fi</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="slice-of-life">Slice of Life</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="sports">Sports</span>
+                                <span class="filter-tag tag" data-filter="genre" data-value="supernatural">Supernatural</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Type Filter -->
+                    <div class="filter-section mb-6">
+                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
+                            <h3 class="font-bold">Type</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content">
+                            <div class="space-y-2">
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="type" value="tv">
+                                    TV Series
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="type" value="movie">
+                                    Movie
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="type" value="ova">
+                                    OVA
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="type" value="ona">
+                                    ONA
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="type" value="special">
+                                    Special
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Filter -->
+                    <div class="filter-section mb-6">
+                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
+                            <h3 class="font-bold">Status</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content">
+                            <div class="space-y-2">
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="status" value="airing">
+                                    Currently Airing
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="status" value="completed">
+                                    Completed
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="status" value="upcoming">
+                                    Upcoming
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Filter -->
+                    <div class="filter-section mb-6">
+                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
+                            <h3 class="font-bold">Rating</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content">
+                            <div class="space-y-2">
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="rating" value="g">
+                                    G - All Ages
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="rating" value="pg">
+                                    PG - Children
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="rating" value="pg13">
+                                    PG-13 - Teens 13+
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" data-filter="rating" value="r17">
+                                    R - 17+
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Year Filter -->
+                    <div class="filter-section mb-6">
+                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
+                            <h3 class="font-bold">Year</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content">
+                            <div class="space-y-2">
+                                <input type="range" min="1980" max="2024" value="2024" class="slider is-fullwidth" id="yearRange">
+                                <div class="flex justify-between text-sm">
+                                    <span id="yearMin">1980</span>
+                                    <span id="yearMax">2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Apply Filters Button -->
+                    <button id="applyFilters" class="button is-primary is-fullwidth">
+                        <i class="fas fa-search mr-2"></i>
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Column -->
+            <div class="lg:col-span-3">
+                <!-- Results Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold" id="resultsTitle">Search Results</h1>
+                        <p class="text-gray-400" id="resultsCount">Loading...</p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="field">
+                            <div class="control">
+                                <div class="select">
+                                    <select id="sortBy">
+                                        <option value="popularity">Most Popular</option>
+                                        <option value="rating">Highest Rated</option>
+                                        <option value="title">A-Z</option>
+                                        <option value="newest">Newest</option>
+                                        <option value="oldest">Oldest</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <button class="button is-light" id="viewGrid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="button" id="viewList">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Container -->
+                <div id="resultsContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Results loaded dynamically -->
+                    <div class="col-span-full text-center py-12">
+                        <div class="loading-spinner w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p>Searching anime...</p>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="mt-8 flex justify-center" id="paginationContainer">
+                    <!-- Pagination loaded dynamically -->
+                </div>
+                
+                <!-- No Results -->
+                <div id="noResults" class="hidden text-center py-16">
+                    <i class="fas fa-search text-5xl text-gray-600 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-400 mb-2">No Anime Found</h3>
+                    <p class="text-gray-500 mb-6">Try adjusting your search or filters</p>
+                    <button id="resetSearch" class="button is-primary">
+                        <i class="fas fa-redo mr-2"></i>
+                        Reset Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass py-8 px-6 mt-12">
+        <div class="container mx-auto text-center text-gray-400">
+            <p>© 2024 AniLab. Use filters to find your perfect anime match.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/animations.js"></script>
+    
+    <script>
+        let currentFilters = {
+            q: '',
+            genres: [],
+            types: [],
+            status: [],
+            rating: [],
+            year: 2024,
+            sort: 'popularity',
+            page: 1
+        };
+        
+        let currentView = 'grid';
+        let totalResults = 0;
+        let totalPages = 1;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize from URL
+            initFromUrl();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Perform initial search
+            performSearch();
+        });
+        
+        function initFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Get search query
+            const searchInput = document.getElementById('searchInput');
+            if (params.get('q')) {
+                currentFilters.q = params.get('q');
+                searchInput.value = currentFilters.q;
+            }
+            
+            // Get other filters from URL
+            ['genres', 'types', 'status', 'rating'].forEach(filter => {
+                if (params.get(filter)) {
+                    currentFilters[filter] = params.get(filter).split(',');
+                }
+            });
+            
+            if (params.get('year')) {
+                currentFilters.year = parseInt(params.get('year'));
+            }
+            
+            if (params.get('sort')) {
+                currentFilters.sort = params.get('sort');
+                document.getElementById('sortBy').value = currentFilters.sort;
+            }
+            
+            if (params.get('page')) {
+                currentFilters.page = parseInt(params.get('page'));
+            }
+            
+            // Update UI with current filters
+            updateFilterUI();
+        }
+        
+        function setupEventListeners() {
+            // Search input
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    currentFilters.q = e.target.value;
+                    currentFilters.page = 1;
+                    updateUrlAndSearch();
+                }
+            });
+            
+            // Clear search
+            document.getElementById('clearSearch').addEventListener('click', () => {
+                document.getElementById('searchInput').value = '';
+                currentFilters.q = '';
+                currentFilters.page = 1;
+                updateUrlAndSearch();
+            });
+            
+            // Filter tags
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const filter = tag.dataset.filter;
+                    const value = tag.dataset.value;
+                    
+                    if (tag.classList.contains('active')) {
+                        tag.classList.remove('active');
+                        removeFilter(filter, value);
+                    } else {
+                        tag.classList.add('active');
+                        addFilter(filter, value);
+                    }
+                });
+            });
+            
+            // Checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const filter = e.target.dataset.filter;
+                    const value = e.target.value;
+                    
+                    if (e.target.checked) {
+                        addFilter(filter, value);
+                    } else {
+                        removeFilter(filter, value);
+                    }
+                });
+            });
+            
+            // Year range
+            document.getElementById('yearRange').addEventListener('input', (e) => {
+                currentFilters.year = parseInt(e.target.value);
+                document.getElementById('yearMax').textContent = currentFilters.year;
+            });
+            
+            // Apply filters button
+            document.getElementById('applyFilters').addEventListener('click', () => {
+                currentFilters.page = 1;
+                updateUrlAndSearch();
+            });
+            
+            // Clear all filters
+            document.getElementById('clearAllFilters').addEventListener('click', resetFilters);
+            
+            // Sort dropdown
+            document.getElementById('sortBy').addEventListener('change', (e) => {
+                currentFilters.sort = e.target.value;
+                currentFilters.page = 1;
+                updateUrlAndSearch();
+            });
+            
+            // View toggle
+            document.getElementById('viewGrid').addEventListener('click', () => setView('grid'));
+            document.getElementById('viewList').addEventListener('click', () => setView('list'));
+            
+            // Reset search
+            document.getElementById('resetSearch').addEventListener('click', resetFilters);
+            
+            // Toggle filters on mobile
+            document.getElementById('toggleFilters').addEventListener('click', () => {
+                const sidebar = document.getElementById('filtersSidebar');
+                sidebar.classList.toggle('hidden');
+            });
+        }
+        
+        function addFilter(filter, value) {
+            if (!currentFilters[filter].includes(value)) {
+                currentFilters[filter].push(value);
+                updateActiveFilters();
+            }
+        }
+        
+        function removeFilter(filter, value) {
+            currentFilters[filter] = currentFilters[filter].filter(v => v !== value);
+            updateActiveFilters();
+        }
+        
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            container.innerHTML = '';
+            
+            // Add each active filter as a tag
+            Object.keys(currentFilters).forEach(filter => {
+                if (Array.isArray(currentFilters[filter]) && currentFilters[filter].length > 0) {
+                    currentFilters[filter].forEach(value => {
+                        const tag = document.createElement('span');
+                        tag.className = 'tag is-light filter-tag active';
+                        tag.innerHTML = `
+                            ${formatFilterName(filter)}: ${formatValueName(value)}
+                            <button class="delete is-small ml-2" data-filter="${filter}" data-value="${value}"></button>
+                        `;
+                        container.appendChild(tag);
+                        
+                        // Add remove event
+                        tag.querySelector('button').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            removeFilter(filter, value);
+                            updateUrlAndSearch();
+                        });
+                    });
+                }
+            });
+        }
+        
+        async function performSearch() {
+            try {
+                // Build query string
+                const queryParams = new URLSearchParams();
+                if (currentFilters.q) queryParams.set('q', currentFilters.q);
+                
+                ['genres', 'types', 'status', 'rating'].forEach(filter => {
+                    if (currentFilters[filter].length > 0) {
+                        queryParams.set(filter, currentFilters[filter].join(','));
+                    }
+                });
+                
+                queryParams.set('year', currentFilters.year);
+                queryParams.set('sort', currentFilters.sort);
+                queryParams.set('page', currentFilters.page);
+                
+                // Show loading
+                document.getElementById('resultsContainer').innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="loading-spinner w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p>Searching anime...</p>
+                    </div>
+                `;
+                
+                // Make API call
+                const response = await fetch(`/api/filter?${queryParams}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderResults(data.data);
+                    updateResultsInfo(data.data);
+                    renderPagination(data.data);
+                } else {
+                    showNoResults();
+                }
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                showNoResults();
+            }
+        }
+        
+        function renderResults(data) {
+            const container = document.getElementById('resultsContainer');
+            
+            if (!data.results || data.results.length === 0) {
+                showNoResults();
+                return;
+            }
+            
+            // Hide no results message
+            document.getElementById('noResults').classList.add('hidden');
+            
+            if (currentView === 'grid') {
+                container.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
+                container.innerHTML = data.results.map(anime => `
+                    <div class="anime-card group">
+                        <div class="relative overflow-hidden rounded-lg mb-3">
+                            <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                                 alt="${anime.title}"
+                                 loading="lazy"
+                                 class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                                 onerror="this.src='/assets/placeholder.jpg'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="absolute bottom-3 left-3 right-3">
+                                    <a href="/watch/${anime.id}" class="button is-small is-purple w-full">
+                                        <i class="fas fa-play mr-2"></i>
+                                        Watch Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="font-semibold truncate">
+                            <a href="/anime/${anime.id}" class="hover:text-purple-300">${anime.title}</a>
+                        </h3>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <span class="mr-3">
+                                <i class="fas fa-star text-yellow-400"></i> ${anime.rating || 'N/A'}
+                            </span>
+                            <span>${anime.type || 'TV'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.className = 'grid grid-cols-1 gap-4';
+                container.innerHTML = data.results.map(anime => `
+                    <div class="glass-card p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                                 alt="${anime.title}"
+                                 class="w-20 h-28 object-cover rounded mr-4"
+                                 onerror="this.src='/assets/placeholder.jpg'">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg mb-1">
+                                    <a href="/anime/${anime.id}" class="hover:text-purple-300">${anime.title}</a>
+                                </h3>
+                                <div class="text-sm text-gray-400 mb-2">${anime.alternativeTitle || ''}</div>
+                                <div class="flex items-center text-sm">
+                                    <span class="mr-4">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        ${anime.rating || 'N/A'}
+                                    </span>
+                                    <span class="mr-4">
+                                        <i class="fas fa-film mr-1"></i>
+                                        ${anime.type || 'TV'}
+                                    </span>
+                                    <span class="mr-4">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        ${anime.year || 'N/A'}
+                                    </span>
+                                    <span class="mr-4">
+                                        <i class="fas fa-play-circle mr-1"></i>
+                                        ${anime.episodes || '?'} eps
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="/watch/${anime.id}" class="button is-purple">
+                                    <i class="fas fa-play mr-2"></i>
+                                    Watch
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Helper functions
+        function formatFilterName(filter) {
+            const names = {
+                q: 'Search',
+                genres: 'Genre',
+                types: 'Type',
+                status: 'Status',
+                rating: 'Rating',
+                year: 'Year',
+                sort: 'Sort By'
+            };
+            return names[filter] || filter;
+        }
+        
+        function formatValueName(value) {
+            const names = {
+                action: 'Action',
+                adventure: 'Adventure',
+                comedy: 'Comedy',
+                drama: 'Drama',
+                fantasy: 'Fantasy',
+                romance: 'Romance',
+                'sci-fi': 'Sci-Fi',
+                'slice-of-life': 'Slice of Life',
+                sports: 'Sports',
+                supernatural: 'Supernatural',
+                tv: 'TV Series',
+                movie: 'Movie',
+                ova: 'OVA',
+                ona: 'ONA',
+                special: 'Special',
+                airing: 'Currently Airing',
+                completed: 'Completed',
+                upcoming: 'Upcoming',
+                g: 'G - All Ages',
+                pg: 'PG - Children',
+                pg13: 'PG-13 - Teens',
+                r17: 'R - 17+',
+                popularity: 'Popularity',
+                rating: 'Rating',
+                title: 'Title',
+                newest: 'Newest',
+                oldest: 'Oldest'
+            };
+            return names[value] || value;
+        }
+    </script>
+</body>
+</html>
