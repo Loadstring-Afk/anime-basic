@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Most Popular Anime - AniLab</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/tailwind.output.css">
+    <link rel="stylesheet" href="/css/glass.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .trend-neutral { color: #6b7280; }
+        
+        .popularity-badge {
+            background: linear-gradient(135deg, #9333ea, #3b82f6);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="navbar glass py-4 px-6 fixed w-full z-50">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="/" id="logo">
+                    <img src="/assets/logo.png" alt="AniLab" class="h-10 w-auto">
+                </a>
+                <div class="hidden md:flex space-x-6">
+                    <a href="/home" class="text-gray-300 hover:text-white">Home</a>
+                    <a href="/top-airing" class="text-gray-300 hover:text-white">Top Airing</a>
+                    <a href="/top-rated" class="text-gray-300 hover:text-white">Top Rated</a>
+                    <a href="/most-popular" class="text-white font-medium">Most Popular</a>
+                </div>
+            </div>
+            
+            <div class="flex-1 max-w-xl mx-8">
+                <div class="field">
+                    <div class="control has-icons-left">
+                        <input class="input glass-input pl-5 pr-10" type="text" placeholder="Search anime...">
+                        <span class="icon is-left">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="/continue-watching" class="text-white hover:text-purple-300">
+                    <i class="fas fa-history text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="pt-24 pb-8 px-6">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">Most Popular Anime</h1>
+                    <p class="text-gray-400">Trending anime based on views, watch time, and community engagement</p>
+                </div>
+                
+                <!-- Time Filters -->
+                <div class="flex space-x-2">
+                    <button class="button is-active">
+                        <i class="fas fa-fire mr-2"></i>
+                        Today
+                    </button>
+                    <button class="button is-light">
+                        <i class="fas fa-calendar-week mr-2"></i>
+                        This Week
+                    </button>
+                    <button class="button is-light">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        This Month
+                    </button>
+                    <button class="button is-light">
+                        <i class="fas fa-infinity mr-2"></i>
+                        All Time
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Trending Now Section -->
+            <div class="glass p-6 rounded-xl mb-8">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-bolt text-yellow-400 mr-2"></i>
+                    Trending Now
+                </h2>
+                <div id="trendingNow" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-6 pb-16">
+        <div class="container mx-auto">
+            <!-- Popular Rankings -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-6">Popularity Rankings</h2>
+                
+                <!-- Region Tabs -->
+                <div class="tabs mb-6">
+                    <ul>
+                        <li class="is-active"><a>Global</a></li>
+                        <li><a>North America</a></li>
+                        <li><a>Europe</a></li>
+                        <li><a>Asia</a></li>
+                        <li><a>Oceania</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Rankings Grid -->
+                <div id="popularityGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+            
+            <!-- Popular by Genre -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-6">Popular by Genre</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-fist-raised text-red-400 text-xl mr-3"></i>
+                            <h3 class="font-bold">Action</h3>
+                        </div>
+                        <div id="actionAnime" class="space-y-2">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-heart text-pink-400 text-xl mr-3"></i>
+                            <h3 class="font-bold">Romance</h3>
+                        </div>
+                        <div id="romanceAnime" class="space-y-2">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-laugh text-yellow-400 text-xl mr-3"></i>
+                            <h3 class="font-bold">Comedy</h3>
+                        </div>
+                        <div id="comedyAnime" class="space-y-2">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-4 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-dragon text-purple-400 text-xl mr-3"></i>
+                            <h3 class="font-bold">Fantasy</h3>
+                        </div>
+                        <div id="fantasyAnime" class="space-y-2">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass py-8 px-6">
+        <div class="container mx-auto text-center text-gray-400">
+            <p>© 2024 AniLab. Popularity rankings are updated hourly based on real-time viewing data.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/animations.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load popular anime data
+            await loadPopularAnime();
+        });
+        
+        async function loadPopularAnime() {
+            try {
+                const response = await fetch('/api/most-popular');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderTrendingNow(data.data.trending || []);
+                    renderPopularityGrid(data.data.popular || []);
+                    renderGenrePopular(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading popular anime:', error);
+                renderFallbackPopular();
+            }
+        }
+        
+        function renderTrendingNow(animeList) {
+            const container = document.getElementById('trendingNow');
+            if (!container) return;
+            
+            container.innerHTML = animeList.slice(0, 4).map(anime => `
+                <div class="group relative">
+                    <div class="relative overflow-hidden rounded-lg mb-3">
+                        <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                             alt="${anime.title}"
+                             loading="lazy"
+                             class="w-full h-40 object-cover transition-transform duration-500 group-hover:scale-110"
+                             onerror="this.src='/assets/placeholder.jpg'">
+                        
+                        <!-- Trending Badge -->
+                        <div class="absolute top-2 left-2">
+                            <span class="popularity-badge">
+                                <i class="fas fa-fire mr-1"></i>
+                                #${anime.trendRank || '?'}
+                            </span>
+                        </div>
+                        
+                        <!-- Trend Indicator -->
+                        <div class="absolute top-2 right-2">
+                            ${anime.trendChange ? `
+                                <span class="px-2 py-1 bg-black/70 rounded text-xs ${anime.trendChange > 0 ? 'trend-up' : 'trend-down'}">
+                                    <i class="fas fa-${anime.trendChange > 0 ? 'arrow-up' : 'arrow-down'} mr-1"></i>
+                                    ${Math.abs(anime.trendChange)}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <h3 class="font-bold truncate">
+                        <a href="/anime/${anime.id}" class="hover:text-purple-300">${anime.title}</a>
+                    </h3>
+                    <div class="text-sm text-gray-400">
+                        ${anime.views ? `${formatViews(anime.views)} views` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderPopularityGrid(animeList) {
+            const container = document.getElementById('popularityGrid');
+            if (!container) return;
+            
+            container.innerHTML = animeList.map(anime => `
+                <div class="glass-card p-4 rounded-lg hover:bg-gray-800/30 transition">
+                    <div class="flex items-start mb-3">
+                        <!-- Rank -->
+                        <div class="w-10 text-center mr-4">
+                            <div class="text-2xl font-bold text-gray-400">#${anime.rank || '?'}</div>
+                            <div class="text-xs text-gray-500">Rank</div>
+                        </div>
+                        
+                        <!-- Poster -->
+                        <div class="mr-4">
+                            <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                                 alt="${anime.title}"
+                                 class="w-16 h-20 object-cover rounded"
+                                 onerror="this.src='/assets/placeholder.jpg'">
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="flex-1">
+                            <h3 class="font-bold mb-1">
+                                <a href="/anime/${anime.id}" class="hover:text-purple-300">${anime.title}</a>
+                            </h3>
+                            <div class="text-sm text-gray-400 mb-2">${anime.type || 'TV'}</div>
+                            
+                            <!-- Stats -->
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <div class="text-gray-500">Views</div>
+                                    <div class="font-bold">${formatViews(anime.views || 0)}</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500">Watch Time</div>
+                                    <div class="font-bold">${formatWatchTime(anime.watchTime || 0)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-3">
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>Popularity Score</span>
+                            <span>${anime.popularityScore || 0}/100</span>
+                        </div>
+                        <progress class="progress is-primary" value="${anime.popularityScore || 0}" max="100"></progress>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-2 mt-4">
+                        <a href="/watch/${anime.id}" class="button is-small is-primary flex-1">
+                            <i class="fas fa-play mr-2"></i>
+                            Watch
+                        </a>
+                        <button class="button is-small is-light">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function formatViews(views) {
+            if (views >= 1000000) return (views / 1000000).toFixed(1) + 'M';
+            if (views >= 1000) return (views / 1000).toFixed(1) + 'K';
+            return views;
+        }
+        
+        function formatWatchTime(minutes) {
+            if (minutes >= 525600) return Math.floor(minutes / 525600) + ' years';
+            if (minutes >= 43800) return Math.floor(minutes / 43800) + ' months';
+            if (minutes >= 10080) return Math.floor(minutes / 10080) + ' weeks';
+            if (minutes >= 1440) return Math.floor(minutes / 1440) + ' days';
+            if (minutes >= 60) return Math.floor(minutes / 60) + ' hours';
+            return minutes + ' min';
+        }
+    </script>
+</body>
+</html>
