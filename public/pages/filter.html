@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search & Filter Anime - AniLab</title>
+    <title id="pageTitle">Browse Anime - AniLab</title>
     
     <!-- CSS -->
     <link rel="stylesheet" href="/css/tailwind.output.css">
@@ -11,31 +11,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        .filter-section {
-            transition: all 0.3s ease;
-        }
-        
-        .filter-section.collapsed {
-            max-height: 60px;
-            overflow: hidden;
-        }
-        
-        .filter-tag {
-            transition: all 0.2s ease;
-        }
-        
-        .filter-tag:hover {
-            transform: scale(1.05);
-        }
-        
-        .filter-tag.active {
-            background: linear-gradient(135deg, #9333ea, #3b82f6);
-            color: white;
-            border-color: transparent;
-        }
-    </style>
 </head>
 <body class="bg-gray-900 text-white">
     <!-- Navigation -->
@@ -45,33 +20,30 @@
                 <a href="/" id="logo">
                     <img src="/assets/logo.png" alt="AniLab" class="h-10 w-auto">
                 </a>
+                <div class="hidden md:flex space-x-4">
+                    <a href="/home" class="text-gray-300 hover:text-white">Home</a>
+                    <a href="/top-airing" class="text-gray-300 hover:text-white">Top Airing</a>
+                    <a href="/top-rated" class="text-gray-300 hover:text-white">Top Rated</a>
+                </div>
             </div>
             
-            <div class="flex-1 max-w-2xl mx-8">
+            <div class="flex-1 max-w-xl mx-4">
                 <div class="field">
-                    <div class="control has-icons-left has-icons-right">
-                        <input class="input glass-input pl-5 pr-12" 
+                    <div class="control has-icons-left">
+                        <input class="input glass-input pl-5 pr-10" 
                                type="text" 
-                               placeholder="Search anime by title, character, studio..."
-                               id="searchInput"
-                               value="${new URLSearchParams(window.location.search).get('q') || ''}">
+                               placeholder="Search anime..."
+                               id="searchInput">
                         <span class="icon is-left">
                             <i class="fas fa-search text-gray-400"></i>
-                        </span>
-                        <span class="icon is-right">
-                            <i class="fas fa-times text-gray-400 cursor-pointer" id="clearSearch"></i>
                         </span>
                     </div>
                 </div>
             </div>
             
             <div class="flex items-center space-x-4">
-                <button class="button is-light" id="toggleFilters">
-                    <i class="fas fa-filter mr-2"></i>
-                    Filters
-                </button>
-                <a href="/home" class="text-white hover:text-purple-300">
-                    <i class="fas fa-home text-xl"></i>
+                <a href="/continue-watching" class="text-white hover:text-purple-300">
+                    <i class="fas fa-history text-xl"></i>
                 </a>
             </div>
         </div>
@@ -79,219 +51,51 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Filters Sidebar -->
-            <div class="lg:col-span-1" id="filtersSidebar">
-                <div class="glass p-6 rounded-xl sticky top-24">
-                    <!-- Search Summary -->
-                    <div class="mb-6">
-                        <h2 class="text-xl font-bold mb-2">Filters</h2>
-                        <div id="activeFilters" class="flex flex-wrap gap-2 mb-4">
-                            <!-- Active filters appear here -->
-                        </div>
-                        <button id="clearAllFilters" class="button is-small is-light w-full">
-                            Clear All Filters
-                        </button>
-                    </div>
-                    
-                    <!-- Genre Filter -->
-                    <div class="filter-section mb-6">
-                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
-                            <h3 class="font-bold">Genres</h3>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="filter-content">
-                            <div class="flex flex-wrap gap-2">
-                                <span class="filter-tag tag" data-filter="genre" data-value="action">Action</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="adventure">Adventure</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="comedy">Comedy</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="drama">Drama</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="fantasy">Fantasy</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="romance">Romance</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="sci-fi">Sci-Fi</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="slice-of-life">Slice of Life</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="sports">Sports</span>
-                                <span class="filter-tag tag" data-filter="genre" data-value="supernatural">Supernatural</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Type Filter -->
-                    <div class="filter-section mb-6">
-                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
-                            <h3 class="font-bold">Type</h3>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="filter-content">
-                            <div class="space-y-2">
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="type" value="tv">
-                                    TV Series
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="type" value="movie">
-                                    Movie
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="type" value="ova">
-                                    OVA
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="type" value="ona">
-                                    ONA
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="type" value="special">
-                                    Special
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Status Filter -->
-                    <div class="filter-section mb-6">
-                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
-                            <h3 class="font-bold">Status</h3>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="filter-content">
-                            <div class="space-y-2">
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="status" value="airing">
-                                    Currently Airing
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="status" value="completed">
-                                    Completed
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="status" value="upcoming">
-                                    Upcoming
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Rating Filter -->
-                    <div class="filter-section mb-6">
-                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
-                            <h3 class="font-bold">Rating</h3>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="filter-content">
-                            <div class="space-y-2">
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="rating" value="g">
-                                    G - All Ages
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="rating" value="pg">
-                                    PG - Children
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="rating" value="pg13">
-                                    PG-13 - Teens 13+
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" data-filter="rating" value="r17">
-                                    R - 17+
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Year Filter -->
-                    <div class="filter-section mb-6">
-                        <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="toggleFilterSection(this)">
-                            <h3 class="font-bold">Year</h3>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="filter-content">
-                            <div class="space-y-2">
-                                <input type="range" min="1980" max="2024" value="2024" class="slider is-fullwidth" id="yearRange">
-                                <div class="flex justify-between text-sm">
-                                    <span id="yearMin">1980</span>
-                                    <span id="yearMax">2024</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Apply Filters Button -->
-                    <button id="applyFilters" class="button is-primary is-fullwidth">
-                        <i class="fas fa-search mr-2"></i>
-                        Apply Filters
-                    </button>
-                </div>
+        <!-- Dynamic Header -->
+        <div class="mb-8">
+            <h1 id="mainTitle" class="text-4xl font-bold mb-2">Browse Anime</h1>
+            <p id="pageDescription" class="text-gray-400">Loading...</p>
+        </div>
+        
+        <!-- Quick Filters -->
+        <div class="glass p-4 rounded-xl mb-8">
+            <div class="flex flex-wrap gap-2" id="quickFilters">
+                <!-- Will be populated dynamically -->
             </div>
-            
-            <!-- Results Column -->
-            <div class="lg:col-span-3">
-                <!-- Results Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 class="text-3xl font-bold" id="resultsTitle">Search Results</h1>
-                        <p class="text-gray-400" id="resultsCount">Loading...</p>
-                    </div>
-                    
-                    <div class="flex items-center space-x-4">
-                        <div class="field">
-                            <div class="control">
-                                <div class="select">
-                                    <select id="sortBy">
-                                        <option value="popularity">Most Popular</option>
-                                        <option value="rating">Highest Rated</option>
-                                        <option value="title">A-Z</option>
-                                        <option value="newest">Newest</option>
-                                        <option value="oldest">Oldest</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex">
-                            <button class="button is-light" id="viewGrid">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="button" id="viewList">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Results Container -->
-                <div id="resultsContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <!-- Results loaded dynamically -->
-                    <div class="col-span-full text-center py-12">
-                        <div class="loading-spinner w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p>Searching anime...</p>
-                    </div>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="mt-8 flex justify-center" id="paginationContainer">
-                    <!-- Pagination loaded dynamically -->
-                </div>
-                
-                <!-- No Results -->
-                <div id="noResults" class="hidden text-center py-16">
-                    <i class="fas fa-search text-5xl text-gray-600 mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-400 mb-2">No Anime Found</h3>
-                    <p class="text-gray-500 mb-6">Try adjusting your search or filters</p>
-                    <button id="resetSearch" class="button is-primary">
-                        <i class="fas fa-redo mr-2"></i>
-                        Reset Search
-                    </button>
-                </div>
-            </div>
+        </div>
+        
+        <!-- Results Grid -->
+        <div id="resultsContainer" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <!-- Results loaded dynamically -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-8 flex justify-center" id="paginationContainer">
+            <!-- Pagination loaded dynamically -->
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+            <div class="loading-spinner w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p>Loading anime...</p>
+        </div>
+        
+        <!-- No Results -->
+        <div id="noResults" class="hidden text-center py-16">
+            <i class="fas fa-search text-5xl text-gray-600 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-400 mb-2">No Anime Found</h3>
+            <p class="text-gray-500 mb-6" id="noResultsMessage">Try adjusting your search or filters</p>
+            <button onclick="window.location.href='/home'" class="button is-primary">
+                <i class="fas fa-home mr-2"></i>
+                Go Home
+            </button>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="glass py-8 px-6 mt-12">
         <div class="container mx-auto text-center text-gray-400">
-            <p>© 2024 AniLab. Use filters to find your perfect anime match.</p>
+            <p>© 2024 AniLab. Using HiAnime API for anime data.</p>
         </div>
     </footer>
 
@@ -299,362 +103,425 @@
     <script src="/js/animations.js"></script>
     
     <script>
-        let currentFilters = {
-            q: '',
-            genres: [],
-            types: [],
-            status: [],
-            rating: [],
-            year: 2024,
-            sort: 'popularity',
-            page: 1
-        };
-        
-        let currentView = 'grid';
-        let totalResults = 0;
-        let totalPages = 1;
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize from URL
-            initFromUrl();
+        // Get page type from URL path
+        function getPageType() {
+            const path = window.location.pathname;
             
-            // Setup event listeners
-            setupEventListeners();
+            // Map URL paths to API endpoints
+            const pageMap = {
+                '/most-favorite': { 
+                    title: 'Most Favorite Anime', 
+                    description: 'Anime with the most favorites from users',
+                    apiPath: '/most-favorite'
+                },
+                '/completed': { 
+                    title: 'Completed Anime', 
+                    description: 'Finished anime series ready to binge',
+                    apiPath: '/completed'
+                },
+                '/recently-added': { 
+                    title: 'Recently Added Anime', 
+                    description: 'Newly added episodes and series',
+                    apiPath: '/recently-added'
+                },
+                '/recently-updated': { 
+                    title: 'Recently Updated Anime', 
+                    description: 'Recently updated episodes and information',
+                    apiPath: '/recently-updated'
+                },
+                '/top-upcoming': { 
+                    title: 'Top Upcoming Anime', 
+                    description: 'Most anticipated upcoming anime',
+                    apiPath: '/top-upcoming'
+                },
+                '/subbed-anime': { 
+                    title: 'Subbed Anime', 
+                    description: 'Anime with Japanese audio and English subtitles',
+                    apiPath: '/subbed-anime'
+                },
+                '/dubbed-anime': { 
+                    title: 'Dubbed Anime', 
+                    description: 'Anime with English dub audio',
+                    apiPath: '/dubbed-anime'
+                },
+                '/character': { 
+                    title: 'Character Details', 
+                    description: 'Anime character information',
+                    apiPath: null // Will handle character-specific logic
+                }
+            };
             
-            // Perform initial search
-            performSearch();
+            // Default to filter page with search params
+            if (path === '/filter' || !pageMap[path]) {
+                const params = new URLSearchParams(window.location.search);
+                return {
+                    type: 'filter',
+                    title: 'Search Results',
+                    description: 'Browse and filter anime',
+                    apiPath: '/filter',
+                    params: Object.fromEntries(params)
+                };
+            }
+            
+            return {
+                type: 'category',
+                ...pageMap[path]
+            };
+        }
+        
+        // Current state
+        let currentPage = 1;
+        let currentFilters = {};
+        let pageType = {};
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get page type
+            pageType = getPageType();
+            
+            // Set page title
+            document.title = `${pageType.title} - AniLab`;
+            document.getElementById('mainTitle').textContent = pageType.title;
+            document.getElementById('pageTitle').textContent = pageType.title;
+            document.getElementById('pageDescription').textContent = pageType.description;
+            
+            // Load data
+            await loadPageData();
+            
+            // Setup search
+            setupSearch();
         });
         
-        function initFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            
-            // Get search query
-            const searchInput = document.getElementById('searchInput');
-            if (params.get('q')) {
-                currentFilters.q = params.get('q');
-                searchInput.value = currentFilters.q;
-            }
-            
-            // Get other filters from URL
-            ['genres', 'types', 'status', 'rating'].forEach(filter => {
-                if (params.get(filter)) {
-                    currentFilters[filter] = params.get(filter).split(',');
-                }
-            });
-            
-            if (params.get('year')) {
-                currentFilters.year = parseInt(params.get('year'));
-            }
-            
-            if (params.get('sort')) {
-                currentFilters.sort = params.get('sort');
-                document.getElementById('sortBy').value = currentFilters.sort;
-            }
-            
-            if (params.get('page')) {
-                currentFilters.page = parseInt(params.get('page'));
-            }
-            
-            // Update UI with current filters
-            updateFilterUI();
-        }
-        
-        function setupEventListeners() {
-            // Search input
-            document.getElementById('searchInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    currentFilters.q = e.target.value;
-                    currentFilters.page = 1;
-                    updateUrlAndSearch();
-                }
-            });
-            
-            // Clear search
-            document.getElementById('clearSearch').addEventListener('click', () => {
-                document.getElementById('searchInput').value = '';
-                currentFilters.q = '';
-                currentFilters.page = 1;
-                updateUrlAndSearch();
-            });
-            
-            // Filter tags
-            document.querySelectorAll('.filter-tag').forEach(tag => {
-                tag.addEventListener('click', () => {
-                    const filter = tag.dataset.filter;
-                    const value = tag.dataset.value;
-                    
-                    if (tag.classList.contains('active')) {
-                        tag.classList.remove('active');
-                        removeFilter(filter, value);
-                    } else {
-                        tag.classList.add('active');
-                        addFilter(filter, value);
-                    }
-                });
-            });
-            
-            // Checkboxes
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', (e) => {
-                    const filter = e.target.dataset.filter;
-                    const value = e.target.value;
-                    
-                    if (e.target.checked) {
-                        addFilter(filter, value);
-                    } else {
-                        removeFilter(filter, value);
-                    }
-                });
-            });
-            
-            // Year range
-            document.getElementById('yearRange').addEventListener('input', (e) => {
-                currentFilters.year = parseInt(e.target.value);
-                document.getElementById('yearMax').textContent = currentFilters.year;
-            });
-            
-            // Apply filters button
-            document.getElementById('applyFilters').addEventListener('click', () => {
-                currentFilters.page = 1;
-                updateUrlAndSearch();
-            });
-            
-            // Clear all filters
-            document.getElementById('clearAllFilters').addEventListener('click', resetFilters);
-            
-            // Sort dropdown
-            document.getElementById('sortBy').addEventListener('change', (e) => {
-                currentFilters.sort = e.target.value;
-                currentFilters.page = 1;
-                updateUrlAndSearch();
-            });
-            
-            // View toggle
-            document.getElementById('viewGrid').addEventListener('click', () => setView('grid'));
-            document.getElementById('viewList').addEventListener('click', () => setView('list'));
-            
-            // Reset search
-            document.getElementById('resetSearch').addEventListener('click', resetFilters);
-            
-            // Toggle filters on mobile
-            document.getElementById('toggleFilters').addEventListener('click', () => {
-                const sidebar = document.getElementById('filtersSidebar');
-                sidebar.classList.toggle('hidden');
-            });
-        }
-        
-        function addFilter(filter, value) {
-            if (!currentFilters[filter].includes(value)) {
-                currentFilters[filter].push(value);
-                updateActiveFilters();
-            }
-        }
-        
-        function removeFilter(filter, value) {
-            currentFilters[filter] = currentFilters[filter].filter(v => v !== value);
-            updateActiveFilters();
-        }
-        
-        function updateActiveFilters() {
-            const container = document.getElementById('activeFilters');
-            container.innerHTML = '';
-            
-            // Add each active filter as a tag
-            Object.keys(currentFilters).forEach(filter => {
-                if (Array.isArray(currentFilters[filter]) && currentFilters[filter].length > 0) {
-                    currentFilters[filter].forEach(value => {
-                        const tag = document.createElement('span');
-                        tag.className = 'tag is-light filter-tag active';
-                        tag.innerHTML = `
-                            ${formatFilterName(filter)}: ${formatValueName(value)}
-                            <button class="delete is-small ml-2" data-filter="${filter}" data-value="${value}"></button>
-                        `;
-                        container.appendChild(tag);
-                        
-                        // Add remove event
-                        tag.querySelector('button').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            removeFilter(filter, value);
-                            updateUrlAndSearch();
-                        });
-                    });
-                }
-            });
-        }
-        
-        async function performSearch() {
+        async function loadPageData(page = 1) {
             try {
-                // Build query string
-                const queryParams = new URLSearchParams();
-                if (currentFilters.q) queryParams.set('q', currentFilters.q);
-                
-                ['genres', 'types', 'status', 'rating'].forEach(filter => {
-                    if (currentFilters[filter].length > 0) {
-                        queryParams.set(filter, currentFilters[filter].join(','));
-                    }
-                });
-                
-                queryParams.set('year', currentFilters.year);
-                queryParams.set('sort', currentFilters.sort);
-                queryParams.set('page', currentFilters.page);
-                
                 // Show loading
-                document.getElementById('resultsContainer').innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <div class="loading-spinner w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p>Searching anime...</p>
-                    </div>
-                `;
+                document.getElementById('loadingState').classList.remove('hidden');
+                document.getElementById('noResults').classList.add('hidden');
                 
-                // Make API call
-                const response = await fetch(`/api/filter?${queryParams}`);
+                currentPage = page;
+                
+                // Build API URL
+                let apiUrl = '/api';
+                
+                if (pageType.type === 'filter' && pageType.params) {
+                    // For filter pages, use filter endpoint with params
+                    const params = new URLSearchParams({
+                        page,
+                        ...pageType.params
+                    });
+                    apiUrl = `/api/filter?${params}`;
+                } else if (pageType.apiPath) {
+                    // For category pages, use specific endpoint
+                    apiUrl = `/api${pageType.apiPath}?page=${page}`;
+                }
+                
+                console.log('Fetching from:', apiUrl);
+                
+                // Fetch from API
+                const response = await fetch(apiUrl);
                 const data = await response.json();
                 
-                if (data.success) {
-                    renderResults(data.data);
-                    updateResultsInfo(data.data);
-                    renderPagination(data.data);
+                // Hide loading
+                document.getElementById('loadingState').classList.add('hidden');
+                
+                if (data.success && data.data && data.data.results && data.data.results.length > 0) {
+                    // Render results
+                    renderResults(data.data.results);
+                    
+                    // Update pagination
+                    updatePagination(data.data);
+                    
+                    // Update quick filters based on page type
+                    updateQuickFilters();
                 } else {
-                    showNoResults();
+                    showNoResults(data.message || 'No results found');
                 }
                 
             } catch (error) {
-                console.error('Search error:', error);
-                showNoResults();
+                console.error('Error loading data:', error);
+                document.getElementById('loadingState').classList.add('hidden');
+                showNoResults('Failed to load data from API');
             }
         }
         
-        function renderResults(data) {
+        function renderResults(animeList) {
             const container = document.getElementById('resultsContainer');
             
-            if (!data.results || data.results.length === 0) {
-                showNoResults();
-                return;
-            }
-            
-            // Hide no results message
-            document.getElementById('noResults').classList.add('hidden');
-            
-            if (currentView === 'grid') {
-                container.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
-                container.innerHTML = data.results.map(anime => `
-                    <div class="anime-card group">
-                        <div class="relative overflow-hidden rounded-lg mb-3">
-                            <img src="${anime.poster || '/assets/placeholder.jpg'}" 
-                                 alt="${anime.title}"
-                                 loading="lazy"
-                                 class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                                 onerror="this.src='/assets/placeholder.jpg'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div class="absolute bottom-3 left-3 right-3">
-                                    <a href="/watch/${anime.id}" class="button is-small is-purple w-full">
-                                        <i class="fas fa-play mr-2"></i>
-                                        Watch Now
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="font-semibold truncate">
-                            <a href="/anime/${anime.id}" class="hover:text-purple-300">${anime.title}</a>
-                        </h3>
-                        <div class="flex items-center text-sm text-gray-400">
-                            <span class="mr-3">
-                                <i class="fas fa-star text-yellow-400"></i> ${anime.rating || 'N/A'}
-                            </span>
-                            <span>${anime.type || 'TV'}</span>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                container.className = 'grid grid-cols-1 gap-4';
-                container.innerHTML = data.results.map(anime => `
-                    <div class="glass-card p-4 rounded-lg">
-                        <div class="flex items-center">
-                            <img src="${anime.poster || '/assets/placeholder.jpg'}" 
-                                 alt="${anime.title}"
-                                 class="w-20 h-28 object-cover rounded mr-4"
-                                 onerror="this.src='/assets/placeholder.jpg'">
-                            <div class="flex-1">
-                                <h3 class="font-bold text-lg mb-1">
-                                    <a href="/anime/${anime.id}" class="hover:text-purple-300">${anime.title}</a>
-                                </h3>
-                                <div class="text-sm text-gray-400 mb-2">${anime.alternativeTitle || ''}</div>
-                                <div class="flex items-center text-sm">
-                                    <span class="mr-4">
-                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                        ${anime.rating || 'N/A'}
-                                    </span>
-                                    <span class="mr-4">
-                                        <i class="fas fa-film mr-1"></i>
-                                        ${anime.type || 'TV'}
-                                    </span>
-                                    <span class="mr-4">
-                                        <i class="fas fa-calendar mr-1"></i>
-                                        ${anime.year || 'N/A'}
-                                    </span>
-                                    <span class="mr-4">
-                                        <i class="fas fa-play-circle mr-1"></i>
-                                        ${anime.episodes || '?'} eps
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <a href="/watch/${anime.id}" class="button is-purple">
+            container.innerHTML = animeList.map(anime => `
+                <div class="anime-card group">
+                    <div class="relative overflow-hidden rounded-lg mb-3">
+                        <img src="${anime.poster || '/assets/placeholder.jpg'}" 
+                             alt="${anime.title}"
+                             loading="lazy"
+                             class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                             onerror="this.src='/assets/placeholder.jpg'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute bottom-3 left-3 right-3">
+                                <a href="/watch/${anime.id || anime.animeId || ''}" 
+                                   class="button is-small is-purple w-full">
                                     <i class="fas fa-play mr-2"></i>
-                                    Watch
+                                    ${anime.episodes ? `Watch EP ${anime.episode || 1}` : 'Watch'}
                                 </a>
                             </div>
                         </div>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-2 left-2 flex flex-col gap-1">
+                            ${anime.type ? `<span class="tag is-dark text-xs">${anime.type}</span>` : ''}
+                            ${anime.status ? `<span class="tag ${getStatusBadgeClass(anime.status)} text-xs">${anime.status}</span>` : ''}
+                        </div>
+                        
+                        ${anime.rating ? `
+                            <div class="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-400 mr-1 text-xs"></i>
+                                    <span class="text-xs font-bold">${anime.rating}</span>
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
+                    
+                    <h3 class="font-semibold truncate text-sm">
+                        <a href="/anime/${anime.id || anime.animeId || '#'}" class="hover:text-purple-300">
+                            ${anime.title || 'Unknown Title'}
+                        </a>
+                    </h3>
+                    
+                    <div class="flex items-center text-xs text-gray-400 mt-1">
+                        ${anime.episodes ? `
+                            <span class="mr-2">
+                                <i class="fas fa-play-circle"></i> ${anime.episodes.sub || anime.episodes.eps || '?'} eps
+                            </span>
+                        ` : ''}
+                        
+                        ${anime.duration ? `
+                            <span>
+                                <i class="fas fa-clock"></i> ${anime.duration}
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updatePagination(data) {
+            const container = document.getElementById('paginationContainer');
+            
+            if (!data.pagination || data.pagination.total <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const { current, total } = data.pagination;
+            const pages = [];
+            
+            // Always show first page
+            pages.push(1);
+            
+            // Show pages around current
+            for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+                pages.push(i);
+            }
+            
+            // Always show last page if not already shown
+            if (total > 1 && !pages.includes(total)) {
+                pages.push(total);
+            }
+            
+            // Remove duplicates and sort
+            const uniquePages = [...new Set(pages)].sort((a, b) => a - b);
+            
+            let paginationHTML = '<nav class="pagination" role="navigation" aria-label="pagination">';
+            
+            // Previous button
+            if (current > 1) {
+                paginationHTML += `
+                    <a class="pagination-previous" onclick="loadPageData(${current - 1})">
+                        Previous
+                    </a>
+                `;
+            } else {
+                paginationHTML += '<a class="pagination-previous" disabled>Previous</a>';
+            }
+            
+            // Next button
+            if (current < total) {
+                paginationHTML += `
+                    <a class="pagination-next" onclick="loadPageData(${current + 1})">
+                        Next page
+                    </a>
+                `;
+            } else {
+                paginationHTML += '<a class="pagination-next" disabled>Next page</a>';
+            }
+            
+            // Page numbers
+            paginationHTML += '<ul class="pagination-list">';
+            
+            let prevPage = 0;
+            uniquePages.forEach(page => {
+                // Add ellipsis if there's a gap
+                if (page - prevPage > 1) {
+                    paginationHTML += '<li><span class="pagination-ellipsis">&hellip;</span></li>';
+                }
+                
+                paginationHTML += `
+                    <li>
+                        <a class="pagination-link ${page === current ? 'is-current' : ''}" 
+                           onclick="loadPageData(${page})">
+                            ${page}
+                        </a>
+                    </li>
+                `;
+                
+                prevPage = page;
+            });
+            
+            paginationHTML += '</ul></nav>';
+            
+            container.innerHTML = paginationHTML;
+        }
+        
+        function updateQuickFilters() {
+            const container = document.getElementById('quickFilters');
+            
+            // Define quick filters based on page type
+            const quickFilters = {
+                '/most-favorite': [
+                    { label: 'All Time', value: 'all' },
+                    { label: 'This Year', value: 'year' },
+                    { label: 'This Season', value: 'season' }
+                ],
+                '/completed': [
+                    { label: 'TV Series', value: 'tv' },
+                    { label: 'Movies', value: 'movie' },
+                    { label: 'OVA', value: 'ova' },
+                    { label: 'Highest Rated', value: 'rating' }
+                ],
+                '/recently-added': [
+                    { label: 'Last 24 Hours', value: 'day' },
+                    { label: 'Last Week', value: 'week' },
+                    { label: 'Last Month', value: 'month' },
+                    { label: 'Subbed', value: 'sub' },
+                    { label: 'Dubbed', value: 'dub' }
+                ],
+                '/recently-updated': [
+                    { label: 'Today', value: 'today' },
+                    { label: 'This Week', value: 'week' },
+                    { label: 'Sub Updates', value: 'sub' },
+                    { label: 'Dub Updates', value: 'dub' }
+                ],
+                '/top-upcoming': [
+                    { label: 'Next Season', value: 'next' },
+                    { label: 'This Year', value: 'year' },
+                    { label: 'Most Anticipated', value: 'anticipated' }
+                ],
+                '/subbed-anime': [
+                    { label: 'Currently Airing', value: 'airing' },
+                    { label: 'Completed', value: 'completed' },
+                    { label: 'Highest Rated', value: 'rating' }
+                ],
+                '/dubbed-anime': [
+                    { label: 'Currently Airing', value: 'airing' },
+                    { label: 'Completed', value: 'completed' },
+                    { label: 'Movies', value: 'movie' }
+                ],
+                '/filter': [
+                    { label: 'All Anime', value: 'all' },
+                    { label: 'Currently Airing', value: 'airing' },
+                    { label: 'Highest Rated', value: 'rating' },
+                    { label: 'Most Popular', value: 'popular' }
+                ]
+            };
+            
+            const filters = quickFilters[window.location.pathname] || quickFilters['/filter'];
+            
+            if (filters && filters.length > 0) {
+                container.innerHTML = filters.map(filter => `
+                    <button class="button is-small is-light quick-filter-btn" 
+                            data-filter="${filter.value}">
+                        ${filter.label}
+                    </button>
                 `).join('');
+                
+                // Add click handlers
+                document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Remove active class from all
+                        document.querySelectorAll('.quick-filter-btn').forEach(b => {
+                            b.classList.remove('is-primary');
+                            b.classList.add('is-light');
+                        });
+                        
+                        // Add active class to clicked
+                        this.classList.remove('is-light');
+                        this.classList.add('is-primary');
+                        
+                        // Apply filter
+                        applyQuickFilter(this.dataset.filter);
+                    });
+                });
+            } else {
+                container.innerHTML = '';
             }
         }
         
-        // Helper functions
-        function formatFilterName(filter) {
-            const names = {
-                q: 'Search',
-                genres: 'Genre',
-                types: 'Type',
-                status: 'Status',
-                rating: 'Rating',
-                year: 'Year',
-                sort: 'Sort By'
-            };
-            return names[filter] || filter;
+        function applyQuickFilter(filterValue) {
+            // Reload data with filter applied
+            currentPage = 1;
+            
+            if (pageType.type === 'filter') {
+                // For filter pages, update URL and reload
+                const params = new URLSearchParams(window.location.search);
+                params.set('sort', filterValue);
+                window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+                loadPageData(1);
+            } else {
+                // For category pages, just reload
+                loadPageData(1);
+            }
         }
         
-        function formatValueName(value) {
-            const names = {
-                action: 'Action',
-                adventure: 'Adventure',
-                comedy: 'Comedy',
-                drama: 'Drama',
-                fantasy: 'Fantasy',
-                romance: 'Romance',
-                'sci-fi': 'Sci-Fi',
-                'slice-of-life': 'Slice of Life',
-                sports: 'Sports',
-                supernatural: 'Supernatural',
-                tv: 'TV Series',
-                movie: 'Movie',
-                ova: 'OVA',
-                ona: 'ONA',
-                special: 'Special',
-                airing: 'Currently Airing',
-                completed: 'Completed',
-                upcoming: 'Upcoming',
-                g: 'G - All Ages',
-                pg: 'PG - Children',
-                pg13: 'PG-13 - Teens',
-                r17: 'R - 17+',
-                popularity: 'Popularity',
-                rating: 'Rating',
-                title: 'Title',
-                newest: 'Newest',
-                oldest: 'Oldest'
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                
+                const query = e.target.value.trim();
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        // Redirect to filter page with search query
+                        window.location.href = `/filter?q=${encodeURIComponent(query)}`;
+                    }, 500);
+                }
+            });
+            
+            // If we have a search query in URL, pre-fill the input
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('q');
+            if (searchQuery) {
+                searchInput.value = searchQuery;
+            }
+        }
+        
+        function showNoResults(message) {
+            document.getElementById('resultsContainer').innerHTML = '';
+            document.getElementById('paginationContainer').innerHTML = '';
+            document.getElementById('noResultsMessage').textContent = message;
+            document.getElementById('noResults').classList.remove('hidden');
+        }
+        
+        function getStatusBadgeClass(status) {
+            const statusMap = {
+                'airing': 'is-success',
+                'completed': 'is-info',
+                'upcoming': 'is-warning',
+                'default': 'is-light'
             };
-            return names[value] || value;
+            
+            const normalizedStatus = status.toLowerCase();
+            return statusMap[normalizedStatus] || statusMap.default;
         }
     </script>
 </body>
